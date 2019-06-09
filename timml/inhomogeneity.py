@@ -5,6 +5,7 @@ from .aquifer_parameters import param_maq
 from .constant import ConstantInside, ConstantStar
 from .intlinesink import IntHeadDiffLineSink, IntFluxDiffLineSink, IntFluxLineSink
 from .controlpoints import controlpoints
+from .areasink import AreaSinkInhom
 
 __all__ = ['PolygonInhomMaq']
 
@@ -22,13 +23,16 @@ class PolygonInhom(AquiferData):
         self.recharge = recharge
         self.inhom_number = self.model.aq.add_inhom(self)
         self.z1, self.z2 = compute_z1z2(xy)
+        zcenter = np.sum(self.z1) / len(self.z1)  # center of inhom
+        self.xcenter = zcenter.real
+        self.ycenter = zcenter.imag
         self.Nsides = len(self.z1)
         Zin = 1e-6j
         Zout = -1e-6j
         self.zcin = 0.5 * (self.z2 - self.z1) * Zin + 0.5 * (
-        self.z1 + self.z2)  # point at center on inside
+        self.z1 + self.z2)  # points at center on inside
         self.zcout = 0.5 * (self.z2 - self.z1) * Zout + 0.5 * (
-        self.z1 + self.z2)  # point at center on outside
+        self.z1 + self.z2)  # points at center on outside
         self.x = np.hstack((self.z1.real, self.z2[-1].real))
         self.y = np.hstack((self.z1.imag, self.z2[-1].imag))
         self.xmin = min(self.x)
@@ -80,7 +84,8 @@ class PolygonInhom(AquiferData):
             c = ConstantInside(self.model, self.zcin.real, self.zcin.imag)
             c.inhomelement = True
             if self.recharge is not None:
-                pass
+                AreaSinkInhom(self.model, self.xcenter, self.ycenter, recharge=self.recharge, \
+                              layer=0, aqin=self)
         if aqin.ltype[0] == 'l':
             assert self.hstar is not None, 'Error: hstar needs to be set'
             c = ConstantStar(self.model, self.hstar, aq=aqin)
