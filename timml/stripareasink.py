@@ -19,12 +19,12 @@ class StripAreaSinkInhom(Element):
         right boundary of inhomogeneity (may not be np.inf)
     
     """
-    def __init__(self, model, xleft=-1, xright=1, N=0.001, layer=0, name='StripAreaSink', label=None):
+    def __init__(self, model, xleft=-1, xright=1, recharge=0.001, layer=0, name='StripAreaSink', label=None):
         Element.__init__(self, model, nparam=1, nunknowns=0, layers=layer, \
                          name=name, label=label)
         self.xleft = xleft
         self.xright = xright
-        self.N = N
+        self.recharge = recharge
         self.model.add_element(self)
 
     def __repr__(self):
@@ -36,7 +36,7 @@ class StripAreaSinkInhom(Element):
         self.L = self.xright - self.xleft
         self.aq = self.model.aq.find_aquifer_data(self.xc, self.yc)
         self.aq.add_element(self)
-        self.parameters = np.array([[self.N]])
+        self.parameters = np.array([[self.recharge]])
         if self.aq.ilap:
             self.lab = self.aq.lab[1:]
             self.A = -self.aq.coef[self.layers, 1:] * self.lab ** 2 / 2
@@ -95,12 +95,12 @@ class StripAreaSinkInhom(Element):
         return changed, terminate, xyztnew
 
 class StripAreaSink(Element):
-    def __init__(self, model, xleft=-1, xright=1, N=0.001, layer=0, name='StripAreaSink', label=None):
+    def __init__(self, model, xleft=-1, xright=1, recharge=0.001, layer=0, name='StripAreaSink', label=None):
         Element.__init__(self, model, nparam=1, nunknowns=0, layers=layer, \
                          name=name, label=label)
         self.xleft = xleft
         self.xright = xright
-        self.N = N
+        self.recharge = recharge
         self.model.add_element(self)
 
     def __repr__(self):
@@ -112,7 +112,7 @@ class StripAreaSink(Element):
         self.L = self.xright - self.xleft
         self.aq = self.model.aq.find_aquifer_data(self.xc, self.yc)
         self.aq.add_element(self)
-        self.parameters = np.array([[self.N]])
+        self.parameters = np.array([[self.recharge]])
         if self.aq.ilap:
             self.lab = self.aq.lab[1:]
             self.A = -self.aq.coef[self.layers, 1:] * self.lab ** 2 / 2
