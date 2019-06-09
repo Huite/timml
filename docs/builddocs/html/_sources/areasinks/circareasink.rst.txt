@@ -1,4 +1,4 @@
-Circular Area-Sink
-------------------
+Area-Sinks
+----------
 
-.. autoclass:: timml.circareasink.CircAreaSink
+.. autoclass:: timml.areasink.CircAreaSink

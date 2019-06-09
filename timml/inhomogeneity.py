@@ -78,7 +78,7 @@ class PolygonInhom(AquiferData):
         if aqin.ltype[0] == 'a':  # add constant on inside
             c = ConstantInside(self.model, self.zcin.real, self.zcin.imag)
             c.inhomelement = True
-            if recharge is not None:
+            if self.recharge is not None:
                 pass
         if aqin.ltype[0] == 'l':
             assert self.hstar is not None, 'Error: hstar needs to be set'

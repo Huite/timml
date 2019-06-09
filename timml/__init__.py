@@ -20,7 +20,7 @@ from .well import WellBase, Well, HeadWell
 from .constant import Constant, ConstantStar
 from .linesink import LineSinkBase, HeadLineSinkZero, HeadLineSink, LineSinkDitch, HeadLineSinkString, LineSinkDitchString
 from .linedoublet import ImpLineDoublet, ImpLineDoubletString, LeakyLineDoublet, LeakyLineDoubletString
-from .circareasink import CircAreaSink
+from .areasink import CircAreaSink
 from .inhomogeneity import PolygonInhomMaq, BuildingPit
 from .inhomogeneity1d import StripInhomMaq, StripInhom3D
 from .uflow import Uflow
