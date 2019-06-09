@@ -12,13 +12,14 @@ class PolygonInhom(AquiferData):
     tiny = 1e-8
 
     def __init__(self, model, xy, kaq, c, z, npor, ltype, hstar,
-                 order, ndeg):
+                 order, ndeg, recharge):
         # All input variables except model should be numpy arrays
         # That should be checked outside this function):        
         AquiferData.__init__(self, model, kaq, c, z, npor, ltype)
         self.order = order
         self.ndeg = ndeg
         self.hstar = hstar
+        self.recharge = recharge
         self.inhom_number = self.model.aq.add_inhom(self)
         self.z1, self.z2 = compute_z1z2(xy)
         self.Nsides = len(self.z1)
@@ -77,6 +78,8 @@ class PolygonInhom(AquiferData):
         if aqin.ltype[0] == 'a':  # add constant on inside
             c = ConstantInside(self.model, self.zcin.real, self.zcin.imag)
             c.inhomelement = True
+            if recharge is not None:
+                pass
         if aqin.ltype[0] == 'l':
             assert self.hstar is not None, 'Error: hstar needs to be set'
             c = ConstantStar(self.model, self.hstar, aq=aqin)
@@ -130,11 +133,11 @@ class PolygonInhomMaq(PolygonInhom):
     tiny = 1e-8
 
     def __init__(self, model, xy, kaq=1, z=[1, 0], c=[], npor=0.3, topboundary='conf',
-                 hstar=None, order=3, ndeg=3):
+                 hstar=None, order=3, ndeg=3, recharge=None):
         self.storeinput(inspect.currentframe())
         kaq, c, npor, ltype, = param_maq(kaq, z, c, npor, topboundary)
         PolygonInhom.__init__(self, model, xy, kaq, c, z, npor, ltype,
-                              hstar, order, ndeg)
+                              hstar, order, ndeg, recharge)
 
 
 def compute_z1z2(xy):
@@ -146,15 +149,15 @@ def compute_z1z2(xy):
     z1 = np.array(x) + np.array(y) * 1j
     index = list(range(1, len(z1))) + [0]
     z2 = z1[index]
-    Z = 1e-6j
+    Z = 1e-6j # inside if correct order
     z = Z * (z2[0] - z1[0]) / 2.0 + 0.5 * (z1[0] + z2[0])
     bigZ = (2.0 * z - (z1 + z2)) / (z2 - z1)
     bigZmin1 = bigZ - 1.0
     bigZplus1 = bigZ + 1.0
     angle = np.sum(np.log(bigZmin1 / bigZplus1).imag)
     if angle < np.pi:  # reverse order
-        z1 = z1[::-1]
-        z2 = z2[::-1]
+        z1 = np.array(x[::-1]) + np.array(y[::-1]) * 1j
+        z2 = z1[index]
     return z1, z2
 
 
