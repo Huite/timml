@@ -51,10 +51,11 @@ class PolygonInhom(AquiferData):
             minAbsBigZplus1 = min(abs(bigZplus1))
             if minAbsBigZmin1 < self.tiny or minAbsBigZplus1 < self.tiny:
                 rv = 1
-                return rv
-            angles = np.log(bigZmin1 / bigZplus1).imag
-            angle = np.sum(angles)
-            if angle > np.pi: rv = 1
+            else:
+                angles = np.log(bigZmin1 / bigZplus1).imag
+                angle = np.sum(angles)
+                if angle > np.pi:
+                    rv = 1
         return rv
 
     def create_elements(self):
